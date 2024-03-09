@@ -1,0 +1,65 @@
+_target_: src.models.regressor_module.RegressorLitModule
+
+regressor_net:
+  _target_: src.models.components.atomistic.AtomisticModel
+
+  input_modules:
+    one_hot:
+      _target_: src.models.components.layers.OneHotEmbedding
+      num_embeddings: ???
+      embedding_dim: 128
+      output_key: "node_states"
+  backbone:
+    _target_: src.models.components.backbones.painn.PaiNN
+    hparams:
+      _target_: src.models.components.backbones.painn.PaiNNHParams
+      num_interactions: 3
+      input_size: 128
+      node_size: 128
+      edge_size: 64
+      update_node_positions: false
+      with_bond_interactions: false
+
+    rbf_layer:
+      _target_: src.models.components.rbf.GaussianLinearRBFLayer
+      n_features: 64
+      max_distance: ???
+
+    envelop_layer:
+      _target_: src.models.components.rbf.EnvelopLayer
+      xc: 5.0
+
+  output_modules:
+    readout:
+      _target_: src.models.components.attention.MultiHeadAttentionReadout
+      input_dim: 128
+      num_layers: 8
+      num_heads: 8
+      readout_net:
+        _target_: src.models.components.layers.MLP
+        input_dim: 128
+        output_dim: ???
+        hidden_dim: 128
+      input_key: "node_states"
+      output_key: ???
+      splits_key: "num_nodes"
+    scale_shift:
+      _target_: src.models.components.layers.ConditionalScaleShift
+      condition_key: ???
+      input_scales: ???
+      input_shifts: ???
+
+
+train_loss_module:
+  _target_: src.models.components.losses.RegressorMSELoss
+
+val_test_loss_module:
+  _target_: src.models.components.losses.RegressorMSELoss
+
+
+optimizer:
+  _target_: torch.optim.AdamW
+  _partial_: true
+  lr: 0.0001
+  weight_decay: 1e-12
+  amsgrad: true

@@ -1,0 +1,71 @@
+# @package _global_
+
+# to execute this experiment run:
+
+defaults:
+  - override /data: suzuki.yaml
+  - override /model: regressor.yaml
+  - override /callbacks: default.yaml
+  - override /logger: wandb.yaml
+  - override /trainer: gpu.yaml
+
+# all parameters below will be merged with parameters from default configurations set above
+# this allows you to overwrite only specified parameters
+
+tags: [ "regressor", "suzuki" ]
+
+
+seed: 12345
+
+trainer:
+  min_epochs: 200
+  max_epochs: -1
+  deterministic: false
+  gradient_clip_val: 1.0
+
+
+data:
+  db_path: ${paths.data_dir}/suzuki.db
+  batch_size: 16
+  split_file: ${paths.data_dir}/cv_splits_suzuki_new/split_0.json
+
+  transform_compose:
+    scale_features:
+      scale: 1.0
+
+    add_edges:
+      _target_: src.data.components.transforms.data.AddEdgesWithinCutoffDistanceTransform
+      cutoff: 5.0
+      keep_loops: false
+
+
+model:
+  regressor_net:
+    input_modules:
+      one_hot:
+        num_embeddings: 13
+
+    backbone:
+      rbf_layer:
+        max_distance: 5.0
+
+    output_modules:
+      readout:
+        readout_net:
+          output_dim: 1
+        output_key: "binding_energy"
+      scale_shift:
+        trainable: true
+        condition_key: "condition"
+        input_scales:
+          binding_energy: [ 1.0, 1.0, 1.0, 1.0, 1.0, 1.0 ]
+        input_shifts:
+          binding_energy: [ -59.709, -7.003, -36.112, 16.743, -39.412, 2.620 ]
+
+  train_loss_module:
+    _target_: src.models.components.losses.RegressorMSELoss
+
+logger:
+  wandb:
+    tags: ${tags}
+    group: "suzuki"

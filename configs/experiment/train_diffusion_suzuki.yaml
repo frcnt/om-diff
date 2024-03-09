@@ -1,0 +1,68 @@
+# @package _global_
+
+# to execute this experiment run:
+
+defaults:
+  - override /data: suzuki.yaml
+  - override /model: masked_edm_og.yaml
+  - override /callbacks: default.yaml
+  - override /logger: wandb.yaml
+  - override /trainer: gpu.yaml
+
+# all parameters below will be merged with parameters from default configurations set above
+# this allows you to overwrite only specified parameters
+
+tags: [ "medm", "suzuki" ]
+
+seed: 42
+
+ckpt_path: /home/scratch3/frjc/logs/train/runs/2023-12-02_11-20-29/checkpoints/last.ckpt
+
+trainer:
+  min_epochs: 10000
+  max_epochs: -1
+  deterministic: false
+  detect_anomaly: true
+  gradient_clip_val: 1.0
+  accumulate_grad_batches: 4
+
+data:
+  db_path: ${paths.data_dir}/suzuki.db
+  batch_size: 32
+
+model:
+  denoising_net:
+    input_modules:
+      one_hot:
+        num_embeddings: 13
+
+    backbone:
+      rbf_layer:
+        max_distance: 7.5
+
+    output_modules:
+      readout:
+        net:
+          input_dim: 256
+          output_dim: 13
+          hidden_dim: 256
+
+  diffusion_hp:
+    val_sample_every: 500
+    num_val_samples: 250
+    sampling_batch_size: 50
+    num_final_samples: 1000
+    yield_final_samples_every: 10
+    scale_positions: 1.0
+
+  noise_model:
+    shape_mapping:
+      node_features: [ 13 ]
+
+  connectivity_module:
+    cutoff: 7.5
+
+logger:
+  wandb:
+    tags: ${tags}
+    group: "suzuki"

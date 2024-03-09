@@ -1,0 +1,37 @@
+_target_: src.data.suzuki_datamodule.SuzukiDataModule
+db_path: ???
+train_val_split: [ 0.9, 0.05 ]
+seed_split: 42
+batch_size: 8
+num_workers: 8
+pin_memory: True
+transform_compose:
+  _target_: src.data.components.transforms.base.Compose
+  row_to_atoms:
+    _target_: src.data.components.transforms.ase.AtomsRowToAtomsDataTransform
+    extract_properties: [ "binding_energy" ]
+  node_mask:
+    _target_: src.data.components.transforms.data.AddNodeMaskTransform
+    node_labels: [ 28, 29, 46, 47, 78, 79 ]
+    output_key: "node_mask"
+  center_around:
+    _target_: src.data.components.transforms.data.CenterAroundTransform
+    node_labels: [ 28, 29, 46, 47, 78, 79 ]
+  metal_center:
+    _target_: src.data.components.transforms.data.AddMetalCenterTransform
+    node_labels: [ 28, 29, 46, 47, 78, 79 ]
+    output_key: "condition"
+  one_hot:
+    _target_: src.data.components.transforms.data.CollapsedOneHotNodeFeaturesTransform
+    node_labels: [ 1, 6, 7, 8, 9, 15, 17, 28, 29, 46, 47, 78, 79 ]
+  scale_features:
+    _target_: src.data.components.transforms.data.ScaleFeaturesTransform
+    input_key: "node_positions"
+    scale: 1.0
+  add_edges:
+    _target_: src.data.components.transforms.data.AddFullyConnectedEdgesTransform
+    keep_loops: false
+
+
+
+

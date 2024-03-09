@@ -1,0 +1,22 @@
+_target_: src.data.ase_datamodule.ASEDataModule
+db_path: ???
+train_val_split: [ 0.8, 0.1 ]
+seed_split: 42
+batch_size: 64
+num_workers: 0
+pin_memory: False
+transform_compose:
+  _target_: src.data.components.transforms.base.Compose
+  row_to_atoms:
+    _target_: src.data.components.transforms.ase.AtomsRowToAtomsDataTransform
+    extract_properties: ???
+  one_hot:
+    _target_: src.data.components.transforms.data.CollapsedOneHotNodeFeaturesTransform
+    node_labels: ???
+  add_edges:
+    _target_: src.data.components.transforms.data.AddFullyConnectedEdgesTransform
+    keep_loops: false
+
+
+
+

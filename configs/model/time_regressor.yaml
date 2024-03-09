@@ -1,0 +1,79 @@
+_target_: src.models.regressor_module.TimeConditionedRegressorLitModule
+
+regressor_net:
+  _target_: src.models.components.atomistic.AtomisticModel
+
+  input_modules:
+    one_hot:
+      _target_: src.models.components.layers.OneHotEmbedding
+      num_embeddings: ???
+      embedding_dim: 128
+      output_key: "node_states"
+    fourier:
+      _target_: src.models.components.layers.FourierFeatures
+      in_features: 1
+      out_features: 16
+      input_key: "ts"
+    combine:
+      _target_: src.models.components.layers.Combine
+      input_keys:
+        - "node_states"
+        - "ts"
+      output_key: "node_states"
+  backbone:
+    _target_: src.models.components.backbones.painn.PaiNNImproved2
+    hparams:
+      _target_: src.models.components.backbones.painn.PaiNNHParams
+      num_interactions: 5
+      input_size: 160 # 128 + 2*16 for time
+      node_size: 128
+      edge_size: 64
+      update_node_positions: false
+      with_bond_interactions: true
+      time_size: 32
+    rbf_layer:
+      _target_: src.models.components.rbf.GaussianLinearRBFLayer
+      n_features: 64
+      max_distance: ???
+
+
+  output_modules:
+    readout:
+      _target_: src.models.components.layers.Set2VecReadout
+      score_net:
+        _target_: src.models.components.layers.MLP
+        input_dim: 128
+        output_dim: 128
+        hidden_dim: 128
+      readout_net:
+        _target_: src.models.components.layers.MLP
+        input_dim: 128
+        hidden_dim: 64
+        output_dim: ???
+      input_key: "node_states"
+      output_key: ???
+      splits_key: "num_nodes"
+
+
+noise_model: ???
+
+train_loss_module:
+  _target_: src.models.components.losses.TimeConditionedRegressorHuberLoss
+  on_clean: false
+  delta: ???
+
+val_test_loss_module:
+  _target_: src.models.components.losses.TimeConditionedRegressorMSELoss
+  on_clean: true
+
+
+optimizer:
+  _target_: torch.optim.AdamW
+  _partial_: true
+  lr: 0.0001
+  weight_decay: 1e-12
+  amsgrad: true
+
+connectivity_module:
+  _target_: src.models.components.connectivity.ConnectedWithinCutoff
+  cutoff: ???
