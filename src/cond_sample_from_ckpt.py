@@ -22,7 +22,7 @@ dotenv.load_dotenv(override=True)
 
 
 def parse_cmd():
-    parser = argparse.ArgumentParser(description="Script for sampling from a checkpoint.")
+    parser = argparse.ArgumentParser(description="Script for conditional sampling from a checkpoint.")
     parser.add_argument(
         "--diffusion_dir_path",
         type=str,

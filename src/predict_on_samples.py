@@ -19,7 +19,7 @@ dotenv.load_dotenv(override=True)
 
 
 def parse_cmd():
-    parser = argparse.ArgumentParser(description="Script for pre from a checkpoint.")
+    parser = argparse.ArgumentParser(description="Script for predicting properties from a checkpoint.")
     parser.add_argument(
         "--predictor_dir_path", type=str, required=True, help="Path to the model's directory."
     )
