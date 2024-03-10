@@ -27,7 +27,6 @@ trainer:
 data:
   db_path: ${paths.data_dir}/suzuki.db
   batch_size: 16
-  split_file: ${paths.data_dir}/cv_splits_suzuki_new/split_0.json
 
   transform_compose:
     scale_features:
@@ -63,7 +62,7 @@ model:
           binding_energy: [ -59.709, -7.003, -36.112, 16.743, -39.412, 2.620 ]
 
   train_loss_module:
-    _target_: src.models.components.losses.RegressorMSELoss
+    _target_: src.models.regression.loss.RegressorMSELoss
 
 logger:
   wandb:

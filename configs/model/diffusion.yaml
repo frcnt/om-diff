@@ -1,13 +1,13 @@
-_target_: src.models.regression.lit_module.TimeConditionedRegressorLitModule
+_target_: src.models.diffusion.lit_module.OMDiffLitModule
 
-regressor_net:
+denoising_net:
   _target_: src.models.atomistic.AtomisticModel
 
   input_modules:
     one_hot:
       _target_: src.models.layers.features.OneHotEmbedding
       num_embeddings: ???
-      embedding_dim: 128
+      embedding_dim: 256
       output_key: "node_states"
     fourier:
       _target_: src.models.layers.features.FourierFeatures
@@ -25,42 +25,48 @@ regressor_net:
     hparams:
       _target_: src.models.backbones.equivnet.EquivNetHParams
       num_interactions: 5
-      input_size: 160 # 128 + 2*16 for time
-      node_size: 128
+      input_size: 288 # 256 + 2*16 for time
+      node_size: 256
       edge_size: 64
     rbf_layer:
       _target_: src.models.layers.rbf.GaussianLinearRBFLayer
       n_features: 64
       max_distance: ???
 
+
   output_modules:
     readout:
-      _target_: src.models.layers.readout.Set2VecReadout
-      score_net:
+      _target_: src.models.layers.readout.Readout
+      net:
         _target_: src.models.layers.mlp.MLP
-        input_dim: 128
-        output_dim: 128
-        hidden_dim: 128
-      readout_net:
-        _target_: src.models.layers.mlp.MLP
-        input_dim: 128
-        hidden_dim: 64
+        input_dim: 256
         output_dim: ???
+        hidden_dim: 256
       input_key: "node_states"
-      output_key: ???
-      splits_key: "num_nodes"
+      output_key: "node_states"
+      reduction: null
+  additional_model_outputs:
+    - "node_positions"
 
+noise_model:
+  _target_: src.models.diffusion.noise.model.MaskedNormalNoiseModel
+  noise_schedule:
+    _target_: src.models.diffusion.noise.schedule.FixedNoiseSchedule
+    timesteps: 1000
+  shape_mapping:
+    node_positions: [ 3 ]
+    node_features: ???
+  center_keys: [ ]
 
-noise_model: ???
 
 train_loss_module:
-  _target_: src.models.regression.loss.TimeConditionedRegressorHuberLoss
-  on_clean: false
-  delta: ???
+  _target_: src.models.diffusion.loss.DiffusionL2Loss
+  weights:
+    node_positions: 1.0
+    node_features: 0.25
 
 val_test_loss_module:
-  _target_: src.models.regression.loss.TimeConditionedRegressorMSELoss
-  on_clean: true
+  _target_: src.models.diffusion.loss.DiffusionL2Loss
 
 
 optimizer:
@@ -69,6 +75,18 @@ optimizer:
   lr: 0.0001
   weight_decay: 1e-12
   amsgrad: true
+
+diffusion_hp:
+  _target_: src.models.diffusion.lit_module.DiffusionHParams
+  val_sample_every: ???
+  num_val_samples: ???
+  sampling_batch_size: ???
+  num_final_samples: ???
+  yield_final_samples_every: ???
+  scale_positions: ???
+
+sampler:
+  _target_: src.models.diffusion.sampling.conditional.MaskedSampler
 
 connectivity_module:
   _target_: src.models.connectivity.ConnectedWithinCutoff

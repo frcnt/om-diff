@@ -4,7 +4,7 @@
 
 defaults:
   - override /data: suzuki.yaml
-  - override /model: masked_edm_og.yaml
+  - override /model: diffusion.yaml
   - override /callbacks: default.yaml
   - override /logger: wandb.yaml
   - override /trainer: gpu.yaml
@@ -12,11 +12,9 @@ defaults:
 # all parameters below will be merged with parameters from default configurations set above
 # this allows you to overwrite only specified parameters
 
-tags: [ "medm", "suzuki" ]
+tags: [ "om-diff", "suzuki" ]
 
 seed: 42
-
-ckpt_path: /home/scratch3/frjc/logs/train/runs/2023-12-02_11-20-29/checkpoints/last.ckpt
 
 trainer:
   min_epochs: 10000

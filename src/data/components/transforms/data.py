@@ -37,10 +37,10 @@ class AddFullyConnectedEdgesTransform(AtomsDataTransform):
 
 
 def add_edges_within_cutoff_distance(
-    atoms_data: AtomsData,
-    cutoff: float,
-    keep_loops: bool = False,
-    use_edge_length_as_edge_feature: bool = False,
+        atoms_data: AtomsData,
+        cutoff: float,
+        keep_loops: bool = False,
+        use_edge_length_as_edge_feature: bool = False,
 ):
     # Compute distance matrix (num_nodes, num_nodes) from node positions
     distance_matrix = torch.cdist(atoms_data.node_positions, atoms_data.node_positions)
@@ -60,10 +60,10 @@ def add_edges_within_cutoff_distance(
 
 class AddEdgesWithinCutoffDistanceTransform(AtomsDataTransform):
     def __init__(
-        self,
-        cutoff: float,
-        keep_loops: bool = False,
-        use_edge_length_as_edge_feature: bool = False,
+            self,
+            cutoff: float,
+            keep_loops: bool = False,
+            use_edge_length_as_edge_feature: bool = False,
     ):
         self.cutoff = cutoff
         self.keep_loops = keep_loops
@@ -76,21 +76,6 @@ class AddEdgesWithinCutoffDistanceTransform(AtomsDataTransform):
             keep_loops=self.keep_loops,
             use_edge_length_as_edge_feature=self.use_edge_length_as_edge_feature,
         )
-
-
-class AddZeroForcesTransform(AtomsDataTransform):
-    """Add zero forces to nodes with same dimensionality as 'node_positions'."""
-
-    def __call__(self, atoms_data: AtomsData) -> AtomsData:
-        """Add zero forces to nodes with same dimensionality as 'node_positions'.
-
-        Args:
-            data: A data object with the 'node_positions' property.
-        Returns:
-            Data object with forces.
-        """
-        atoms_data.forces = torch.zeros_like(atoms_data.node_positions)
-        return atoms_data
 
 
 class OneHotNodeFeaturesTransform(AtomsDataTransform):
@@ -107,20 +92,20 @@ class OneHotNodeFeaturesTransform(AtomsDataTransform):
     def __call__(self, atoms_data: AtomsData) -> AtomsData:
         assert atoms_data.node_features.max() < self.num_classes
         atoms_data.node_features = (
-            torch.nn.functional.one_hot(
-                atoms_data.node_features.squeeze(), self.num_classes
-            ).float()
-            * self.scale
+                torch.nn.functional.one_hot(
+                    atoms_data.node_features.squeeze(), self.num_classes
+                ).float()
+                * self.scale
         )
         return atoms_data
 
 
 class CollapsedOneHotNodeFeaturesTransform(AtomsDataTransform):
     def __init__(
-        self,
-        node_labels: list[int],
-        node_labels_mask: Optional[list[int]] = None,
-        scale: float = 1.0,
+            self,
+            node_labels: list[int],
+            node_labels_mask: Optional[list[int]] = None,
+            scale: float = 1.0,
     ):
         self.encoder_mapping = {nl: i for (i, nl) in enumerate(sorted(node_labels))}
         self.decoder_mapping = {i: nl for (i, nl) in enumerate(sorted(node_labels))}
@@ -138,13 +123,13 @@ class CollapsedOneHotNodeFeaturesTransform(AtomsDataTransform):
         if len(shape) == 2:
             assert atoms_data.node_features.shape[-1] == 1
         node_features = (
-            F.one_hot(
-                torch.as_tensor(
-                    [self.encoder_mapping[v.item()] for v in atoms_data.node_features.view(-1)]
-                ),
-                self.num_classes,
-            ).float()
-            * self.scale
+                F.one_hot(
+                    torch.as_tensor(
+                        [self.encoder_mapping[v.item()] for v in atoms_data.node_features.view(-1)]
+                    ),
+                    self.num_classes,
+                ).float()
+                * self.scale
         )
 
         atoms_data.node_features = node_features
@@ -210,8 +195,8 @@ class AddNodeMaskTransform(AtomsDataTransform):
 
 class CenterAroundTransform(AtomsDataTransform):
     def __init__(
-        self,
-        node_labels: list[int],
+            self,
+            node_labels: list[int],
     ):
         self.node_labels = torch.as_tensor(node_labels)
 

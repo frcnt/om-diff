@@ -1,18 +1,18 @@
 from typing import Optional, Union, Callable
 
 import torch
-from src.models.base_lit_module import BaseLitModule
-from src.models.atomistic import AtomisticModel
-from src.models.connectivity import Connectivity
-from src.models.components.losses import (
-    TimeConditionedRegressor,
-    TimeConditionedRegressorLoss,
-    RegressorLoss,
-)
-from src.models.components.noise.model import NormalNoiseModel
 
 from src.data.base_datamodule import BaseDataModule
 from src.data.components import Batch
+from src.models.atomistic import AtomisticModel
+from src.models.base_lit_module import BaseLitModule
+from src.models.connectivity import Connectivity
+from src.models.diffusion.noise.model import NormalNoiseModel
+from src.models.regression.loss import (
+    TimeConditionedRegressorLoss,
+    RegressorLoss,
+)
+from src.models.regression.model import TimeConditionedRegressor
 
 
 class RegressorLitModule(BaseLitModule):

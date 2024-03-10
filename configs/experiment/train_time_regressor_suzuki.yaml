@@ -12,7 +12,7 @@ defaults:
 # all parameters below will be merged with parameters from default configurations set above
 # this allows you to overwrite only specified parameters
 
-tags: [ "regressor", "suzuki" ]
+tags: [ "time-regressor", "suzuki" ]
 
 
 seed: 12345
@@ -51,23 +51,24 @@ model:
           output_dim: 1
         output_key: "binding_energy"
       scale_shift:
-        _target_: src.models.components.layers.ScaleShift
+        _target_: src.models.layers.features.ConditionalScaleShift
         trainable: true
+        condition_key: "condition"
         input_scales:
-          binding_energy: 23.74217
+          binding_energy: [ 9.515, 9.270, 9.170, 7.331, 9.275, 5.930 ]
         input_shifts:
-          binding_energy: -19.56596
+          binding_energy: [ -59.709, -7.003, -36.112, 16.743, -39.412, 2.620 ]
 
   noise_model:
-    _target_: src.models.components.noise.model.NormalNoiseModel
+    _target_: src.models.diffusion.noise.model.MaskedNormalNoiseModel
     noise_schedule:
-      _target_: src.models.components.noise.schedule.FixedNoiseSchedule
+      _target_: src.models.diffusion.noise.schedule.FixedNoiseSchedule
       timesteps: 1000
     shape_mapping:
       node_positions: [ 3 ]
       node_features: [ 13 ]
-    center_keys:
-      - node_positions
+    center_keys: [ ]
+
   train_loss_module:
     delta: 7.0
 

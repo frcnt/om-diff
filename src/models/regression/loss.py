@@ -1,17 +1,14 @@
 import copy
 from typing import Tuple, Optional
 
-import copy
-from typing import Tuple, Optional
-
-import src.models.components.ops as ops
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-from src.models.components.atomistic import AtomisticModel
-from src.models.components.regressor import TimeConditionedRegressor
 
+import src.models.ops as ops
 from src.data.components import Batch
+from src.models.atomistic import AtomisticModel
+from src.models.regression.model import TimeConditionedRegressor
 
 
 class RegressorLoss(nn.Module):

@@ -36,13 +36,13 @@ class BaseSuzukiDataset(ASEDBDataset):
     structures_path: str = ...
 
     def __init__(
-        self,
-        db_path,
-        transform: Transform = lambda _x: _x,
-        download: bool = False,
-        idx_subset: np.ndarray = None,
-        in_memory: bool = True,
-        **kwargs,
+            self,
+            db_path,
+            transform: Transform = lambda _x: _x,
+            download: bool = False,
+            idx_subset: np.ndarray = None,
+            in_memory: bool = True,
+            **kwargs,
     ):
         if download:
             dir_path = os.path.dirname(db_path)
@@ -58,7 +58,7 @@ class BaseSuzukiDataset(ASEDBDataset):
 
     @classmethod
     def download_dataset(
-        cls, dir_path, db_name: str = "suzuki.db", force_download: bool = True, clean: bool = True
+            cls, dir_path, db_name: str = "suzuki.db", force_download: bool = True, clean: bool = True
     ):
         db_path = os.path.join(dir_path, db_name)
         energies_path = os.path.join(dir_path, cls.energies_path)
@@ -70,7 +70,7 @@ class BaseSuzukiDataset(ASEDBDataset):
             archive_path = os.path.join(dir_path, archive_name)
             if not os.path.exists(archive_path) or force_download:
                 with tqdm.tqdm(
-                    unit="B", unit_scale=True, unit_divisor=1024, miniters=1, desc=archive_path
+                        unit="B", unit_scale=True, unit_divisor=1024, miniters=1, desc=archive_path
                 ) as t:
                     requests.urlretrieve(
                         cls.distant_url.format(archive_name), filename=archive_path
@@ -124,13 +124,13 @@ class SuzukiFFDataset(ASEDBDataset):
     expected_length = 25_116
 
     def __init__(
-        self,
-        db_path,
-        transform: Transform = lambda _x: _x,
-        download: bool = False,
-        idx_subset: np.ndarray = None,
-        in_memory: bool = True,
-        **kwargs,
+            self,
+            db_path,
+            transform: Transform = lambda _x: _x,
+            download: bool = False,
+            idx_subset: np.ndarray = None,
+            in_memory: bool = True,
+            **kwargs,
     ):
         if download:
             dir_path = os.path.dirname(db_path)
@@ -146,11 +146,11 @@ class SuzukiFFDataset(ASEDBDataset):
 
     @classmethod
     def download_dataset(
-        cls,
-        dir_path,
-        db_name: str = "suzuki_ff.db",
-        force_download: bool = True,
-        clean: bool = True,
+            cls,
+            dir_path,
+            db_name: str = "suzuki_ff.db",
+            force_download: bool = True,
+            clean: bool = True,
     ):
         db_path = os.path.join(dir_path, db_name)
         structures_path = os.path.join(dir_path, "structures/All2Lig")
@@ -163,7 +163,7 @@ class SuzukiFFDataset(ASEDBDataset):
             archive_path = os.path.join(dir_path, archive_name)
             if not os.path.exists(archive_path) or force_download:
                 with tqdm.tqdm(
-                    unit="B", unit_scale=True, unit_divisor=1024, miniters=1, desc=archive_path
+                        unit="B", unit_scale=True, unit_divisor=1024, miniters=1, desc=archive_path
                 ) as t:
                     requests.urlretrieve(
                         cls.distant_url.format(archive_name), filename=archive_path
@@ -184,17 +184,3 @@ class SuzukiFFDataset(ASEDBDataset):
             shutil.rmtree(os.path.join(dir_path, "structures"))
 
         print(f"Done downloading Suzuki FF, now located at {db_path}.")
-
-
-if __name__ == "__main__":
-    from src.data.components.transforms.ase import AtomsRowToAtomsDataTransform
-
-    dataset = Suzuki4Dataset(
-        db_path="/Users/frjc/phd/projects/diffusion4md/data/suzuki-4.db",
-        download=False,
-        transform=AtomsRowToAtomsDataTransform(extract_properties=["binding_energy"]),
-    )
-    assert len(dataset) == dataset.expected_length
-    print(dataset.node_label_count)
-    print(list(dataset.node_label_count.keys()))
-    print(dataset[0].__dict__)
