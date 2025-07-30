@@ -1,6 +1,6 @@
-# OM-Diff: Inverse-design of organometallic catalysts with guided equivariant diffusion
+# OM-Diff: Inverse-design of organometallic catalysts with guided equivariant denoising diffusion
 
-This repository is the official implementation of the OM-Diff paper.
+This repository is the official implementation of the [OM-Diff paper](https://doi.org/10.26434/chemrxiv-2024-882hh).
 
 This repository builds on the [`lightning-hydra-template`](https://github.com/ashleve/lightning-hydra-template).
 Explanations on e.g. how the config files are resolved can be found in the original template.
