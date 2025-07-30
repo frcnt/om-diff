@@ -20,8 +20,7 @@ class BaseSuzukiDataset(ASEDBDataset):
     """
     Suzuki Dataset from doi:10.1039/C8SC01949E.
     """
-
-    distant_url = "https://archive.materialscloud.org/record/file?filename={}&record_id=56"
+    distant_url = "https://archive.materialscloud.org/records/raa1d-b9229/files/{}?download=1"
     filenames = {
         "structures.tar.gz": "md5:030cd6a0e4fc77b0974e9ceb33fe8ce8",
         "optimized.tar.gz": "md5:5e6865d8715bd983a2b814d550108ba5",
@@ -117,7 +116,7 @@ class SuzukiFFDataset(ASEDBDataset):
     Suzuki Dataset from doi:10.1039/C8SC01949E.
     """
 
-    distant_url = "https://archive.materialscloud.org/record/file?filename={}&record_id=56"
+    distant_url = "https://archive.materialscloud.org/records/raa1d-b9229/files/{}?download=1"
     filenames = {
         "structures.tar.gz": "md5:030cd6a0e4fc77b0974e9ceb33fe8ce8",
     }
